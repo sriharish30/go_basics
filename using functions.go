@@ -14,7 +14,7 @@ func main() {
 	output("expenses: ")
 	fmt.Scan(&expenses)
 	//fmt.Print("Tax Rate: ")
-	output("TaxRate: ")
+	output("TaxRate: ") 
 	fmt.Scan(&taxrate)
 
 	Ebt, profit, ratio := profitcalculation(revenue, expenses, taxrate)
