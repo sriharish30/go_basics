@@ -54,3 +54,68 @@ func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {
 		TaxRate:    taxRate,
 	}
 }
+
+
+
+
+
+
+//after some changes the code will look like this for prics.go
+
+
+package prices
+
+import (
+	"example/practice/conversion"
+	"example/practice/iomanager"
+	"fmt"
+)
+
+type TaxIncludedPriceJob struct {
+	IOManager        iomanager.IOManager `json:"-"`
+	TaxRate          float64             `json:"Tax_Rate"`
+	Inputprice       []float64           `json:"Input_price"`
+	TaxIncludedPrice map[string]string   `json:"Tax_Included_Price"`
+}
+
+func (job *TaxIncludedPriceJob) LoadData() error {
+	lines, err := job.IOManager.ReadLines()
+
+	if err != nil {
+		return err
+	}
+
+	prices, err := conversion.StringtoFloat(lines)
+
+	if err != nil {
+		return err
+	}
+
+	job.Inputprice = prices
+	return nil
+
+}
+
+func (job *TaxIncludedPriceJob) Process() error {
+	err := job.LoadData()
+	if err != nil {
+		return err
+	}
+
+	result := make(map[string]string)
+	for _, rate := range job.Inputprice {
+		taxIncludedPrice := rate * (1 + job.TaxRate)
+		result[fmt.Sprintf("%.2f", rate)] = fmt.Sprintf("%.2f", taxIncludedPrice)
+	}
+	job.TaxIncludedPrice = result
+	return job.IOManager.WriteResult(job)
+
+}
+
+func NewTaxIncludedPriceJob(iom iomanager.IOManager, taxRate float64) *TaxIncludedPriceJob {
+	return &TaxIncludedPriceJob{
+		IOManager:  iom,
+		Inputprice: []float64{10, 20, 30},
+		TaxRate:    taxRate,
+	}
+}
