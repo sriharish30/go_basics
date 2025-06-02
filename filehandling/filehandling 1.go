@@ -40,8 +40,9 @@ func (fh FileHandling) WriteResult(data any) error {
 	if err != nil {
 		return errors.New("Failed to create a file")
 	}
-	time.Sleep(3 * time.Second)
+	time.Sleep(3 * time.Second) // to slow down the process of writing result in data
 
+	
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(data)
 	if err != nil {
