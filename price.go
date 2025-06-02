@@ -95,11 +95,12 @@ func (job *TaxIncludedPriceJob) LoadData() error {
 	return nil
 
 }
+//this function have included the go routines
 
-func (job *TaxIncludedPriceJob) Process() error {
+func (job *TaxIncludedPriceJob) Process(donechan chan bool){
 	err := job.LoadData()
 	if err != nil {
-		return err
+		//return err
 	}
 
 	result := make(map[string]string)
@@ -108,7 +109,8 @@ func (job *TaxIncludedPriceJob) Process() error {
 		result[fmt.Sprintf("%.2f", rate)] = fmt.Sprintf("%.2f", taxIncludedPrice)
 	}
 	job.TaxIncludedPrice = result
-	return job.IOManager.WriteResult(job)
+	job.IOManager.WriteResult(job)
+	donechan<-true //go routine will send a signal to the channel whhen the job is done 
 
 }
 
